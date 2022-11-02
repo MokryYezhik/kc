@@ -6,9 +6,10 @@ import os
 import torch
 import numpy as np
 import pandas as pd
+from catboost import CatBoostClassifier
 from torch import Tensor
 
-from src.load_env import NN_MODEL_INFO
+from src.load_env import CB_MODEL_INFO, NN_MODEL_INFO
 from src.crud import user_features, post_features
 
 from pathlib import Path
@@ -30,6 +31,18 @@ def get_model_path(path: str) -> str:
     else:
         MODEL_PATH = path
     return MODEL_PATH
+
+
+def load_cb_model():
+    model_file = os.path.join(PATH, CB_MODEL_INFO['model_name'])
+    model = CatBoostClassifier()
+    model.load_model(model_file)
+    return model
+
+def cb_predict(model, feats):
+    model_columns = CB_MODEL_INFO['model_feats_names']
+    preds = model.predict_proba(feats[model_columns])[:, 1]
+    return preds
 
 
 
@@ -64,7 +77,7 @@ class NCCF(torch.nn.Module):
 
 
 
-def load_model():
+def load_nn_model():
     """
     Загрузка и определение NN-модели
     """

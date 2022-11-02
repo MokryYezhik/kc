@@ -9,15 +9,16 @@ import datetime
 # import sys
 # sys.path.append(str(Path(__file__).parent.parent))
 
-from src.models import load_model, nn_predict
+from src.models import load_nn_model, load_cb_model, nn_predict, cb_predict
 from src.crud import liked_posts, post_features, assign_feats
 from src.schema import PostGet
 
 app = FastAPI()
 
 
-logger.info('loading model')
-nn_model = load_model()
+logger.info('loading models')
+nn_model = load_nn_model()
+cb_model = load_cb_model()
 logger.info('service is up and running'.upper())
 
 
@@ -29,7 +30,7 @@ def recommend(id: int, time: datetime.datetime, limit: int) -> List[PostGet]:
 
     # предсказание
     logger.info('get predictions')
-    pred_pobas = nn_predict(nn_model, id, user_posts_features)
+    pred_pobas = cb_predict(cb_model, id, user_posts_features)
     post_features['pred'] = pred_pobas
 
     # фильтрация уже понравивишихся постов
