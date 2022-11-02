@@ -6,6 +6,7 @@ import os
 import torch
 import numpy as np
 import pandas as pd
+from torch import Tensor
 
 from src.load_env import NN_MODEL_INFO
 from src.crud import user_features, post_features
@@ -68,7 +69,7 @@ def load_model():
     Загрузка и определение NN-модели
     """
     # model_file = './ncf_CC_01_17138.pth'
-    model_file = os.path.join(PATH, NN_MODEL_INFO['nn_model_name'])
+    model_file = os.path.join(PATH, NN_MODEL_INFO['model_name'])
     model_path = get_model_path(model_file)
 
     state_dict = torch.load(model_path)
@@ -90,10 +91,13 @@ def load_model():
     return model
 
 
-def predict(model, id, feats):
+def nn_predict(model, id, features):
     """
     Предсказание вероятности для всех постов
     """
+    model_columns = NN_MODEL_INFO['model_feats_names']
+    feats = Tensor(features[model_columns].values)
+
     model.eval()
     posts = [post2id[post] for post in post_features['post_id'].values]
     posts = torch.LongTensor(posts)
@@ -103,7 +107,6 @@ def predict(model, id, feats):
         output = model(users, posts, feats)
         output = torch.sigmoid(output).flatten()
 
-    # sorted_ids  = torch.argsort(output, descending=True)
     return np.array(output)
 
 

@@ -7,6 +7,10 @@ from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
 
+####################
+# Подключение к БД #
+####################
+
 # Получение данных для подлкючения к БД
 DB_INFO ={
     'database': os.environ.get('DB_DATABASE'),
@@ -23,27 +27,49 @@ FEED_DB = 'public.feed_data'
 ITEMS_FEATS_DB = 'public.posts_features_0'
 MTE_CITY_DB = 'public.yaa_mte_city'
 
+#############
+# CB модель #
+#############
+
+# список признаков для CB модели в правильном порядке
+__cb_model_feats_names = ['topic', 'total_tfidf', 'max_tfidf', 'mean_tfidf',
+        'dist_1_cluster', 'dist_2_cluster', 'dist_3_cluster',
+        'dist_4_cluster', 'dist_5_cluster', 'dist_6_cluster', 'dist_7_cluster',
+        'dist_8_cluster', 'dist_9_cluster', 'dist_10_cluster', 'gender', 'age', 'country',
+        'city', 'exp_group', 'os', 'source', 'hour', 'month', 'day']
+
+# данные CB модели
+CB_MODEL_INFO = {
+    'model_name': 'catboost_model_example',
+    'model_feats_names': __cb_model_feats_names,
+}
+
+#############
+# NN модель #
+#############
 
 # список признаков для модели в правильном порядке
-__nn_model_feats_names = ['total_tfidf', 'max_tfidf',
+__nn_model_feats_names = ['total_tfidf_enc', 'max_tfidf',
        'mean_tfidf', 'dist_1_cluster', 'dist_2_cluster', 'dist_3_cluster',
        'dist_4_cluster', 'dist_5_cluster', 'dist_6_cluster', 'dist_7_cluster',
-       'dist_8_cluster', 'dist_9_cluster', 'dist_10_cluster', 'gender', 'age',
+       'dist_8_cluster', 'dist_9_cluster', 'dist_10_cluster', 'gender', 'age_enc',
        'topic_covid', 'topic_entertainment', 'topic_movie', 'topic_politics',
        'topic_sport', 'topic_tech', 'exp_group_1', 'exp_group_2',
        'exp_group_3', 'exp_group_4', 'os_iOS', 'source_organic', 'month_11',
        'month_12', 'day_1', 'day_2', 'day_3', 'day_4', 'day_5', 'day_6',
-       'country', 'city', 'hour']
+       'country_enc', 'city_enc', 'hour_enc']
 
 # данные NN модели
 NN_MODEL_INFO = {
-    'nn_model_name': 'ncf_CC_02_11688.pth',
-    'nn_model_feats_names': __nn_model_feats_names,
+    'model_name': 'ncf_CC_02_11688.pth',
+    'model_feats_names': __nn_model_feats_names,
     'latent_size': 100,
     'feats_size': 38,
 }
 
-# данные для энкодинга
+########################
+# данные для энкодинга #
+########################
 __mte_country_dict = {
     'Russia': 0.10774984662537317,
     'Ukraine': 0.1704849812957921,
