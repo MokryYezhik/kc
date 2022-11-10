@@ -5,13 +5,25 @@ import psycopg2
 import datetime
 import pandas as pd
 from loguru import logger
+import os
+import yaml
 
 from src.load_env import *
 
 from sqlalchemy import create_engine
 from src.encodes import get_mte_dicts, OHE, min_max_scaler
 
+from pathlib import Path
+PATH = Path(__file__).parent.parent.resolve()
+
 mte_country_dict, mte_city_dict, mte_hour_dict = get_mte_dicts()
+
+
+def get_config():
+    file_path = os.path.join(PATH, "params.yaml")
+    with open(file_path, "r") as f:
+        params = yaml.safe_load(f)
+    return params
 
 
 def __batch_load_sql(query: str):

@@ -39,7 +39,7 @@ def load_cb_model():
     model.load_model(model_file)
     return model
 
-def cb_predict(model, feats):
+def cb_predict(model, id, feats):
     model_columns = CB_MODEL_INFO['model_feats_names']
     preds = model.predict_proba(feats[model_columns])[:, 1]
     return preds
@@ -136,4 +136,14 @@ def load_most_liked_posts():
 
 
 
-
+def define_model(config: dict):
+    model_name = config['model']
+    if model_name == 'cb':
+        model = load_cb_model()
+        func = cb_predict
+    elif model_name == 'nn':
+        model = load_nn_model()
+        func = nn_predict
+    else:
+        raise ValueError(f'Model name can\'t be {model}')
+    return model, func

@@ -4,21 +4,23 @@ from typing import List
 from fastapi import FastAPI
 import datetime
 
+
 # Добавление модуля в PATH
 # from pathlib import Path
 # import sys
 # sys.path.append(str(Path(__file__).parent.parent))
 
-from src.models import load_nn_model, load_cb_model, nn_predict, cb_predict
-from src.crud import liked_posts, post_features, assign_feats
+from src.models import define_model
+from src.crud import liked_posts, post_features, assign_feats, get_config
 from src.schema import PostGet
 
 app = FastAPI()
 
 
+logger.info('loading config')
+cfg = get_config()
 logger.info('loading models')
-nn_model = load_nn_model()
-cb_model = load_cb_model()
+model, predict_proba = define_model(cfg)
 logger.info('service is up and running'.upper())
 
 
@@ -30,7 +32,7 @@ def recommend(id: int, time: datetime.datetime, limit: int) -> List[PostGet]:
 
     # предсказание
     logger.info('get predictions')
-    pred_pobas = cb_predict(cb_model, id, user_posts_features)
+    pred_pobas = predict_proba(model, id, user_posts_features)
     post_features['pred'] = pred_pobas
 
     # фильтрация уже понравивишихся постов
@@ -48,6 +50,5 @@ def recommend(id: int, time: datetime.datetime, limit: int) -> List[PostGet]:
             'topic': recommended_posts.iloc[i]['topic']
         }) for i in range(recommended_posts.shape[0])
     ]
-
 
 
